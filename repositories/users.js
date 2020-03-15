@@ -2,7 +2,7 @@ const fs = require('fs')
 const crypto = require('crypto')
 
 class UsersRepository {
-  constructor(filename) {
+  constructor (filename) {
     if (!filename) {
       throw new Error('Creating a repository requires a filename')
     }
@@ -15,7 +15,7 @@ class UsersRepository {
     }
   }
 
-  async getAll() {
+  async getAll () {
     // open the file called this.filename
     return JSON.parse(
       await fs.promises.readFile(this.filename, {
@@ -24,7 +24,7 @@ class UsersRepository {
     )
   }
 
-  async create(attrs) {
+  async create (attrs) {
     attrs.id = this.randomId()
     // object that has an email and password
     const records = await this.getAll()
@@ -32,20 +32,63 @@ class UsersRepository {
     await this.writeAll(records)
   }
 
-  async writeAll(records) {
+  async writeAll (records) {
     await fs.promises.writeFile(this.filename, JSON.stringify(records, null, 2))
   }
 
-  randomId() {
+  randomId () {
     return crypto.randomBytes(4).toString('hex')
+  }
+
+  async getOne (id) {
+    const records = await this.getAll()
+    return records.find(record => record.id === id)
+  }
+
+  async delete (id) {
+    const records = await this.getAll()
+    const filteredRecords = records.filter(record => record.id !== id)
+    await this.writeAll(filteredRecords)
+  }
+
+  async update (id, attrs) {
+    const records = await this.getAll()
+    const record = records.find(record => record.id === id)
+
+    if (!record) {
+      throw new Error(`Record with id ${id} not found`)
+    }
+
+    Object.assign(record, attrs)
+    await this.writeAll(records)
+  }
+
+  async getOneBy (filters) {
+    const records = await this.getAll()
+    for (const record of records) {
+      let found = true
+
+      for (const key in filters) {
+        if (record[key] !== filters[key]) {
+          found = false
+        }
+      }
+      if (found) {
+        return record
+      }
+    }
   }
 }
 
 const test = async () => {
   const repo = new UsersRepository('users.json')
-  await repo.create({ email: 'test@test.com', password: 'password' })
-  const users = await repo.getAll()
-  console.log(users)
+  //   await repo.create({ email: 'test@test.com', password: 'password' })
+  //   const users = await repo.getAll()
+  const user = await repo.getOneBy({
+    fsdfsdfsdfsdf: 'dfsdfsdfsdf'
+  })
+
+  console.log(user)
 }
 
 test()
