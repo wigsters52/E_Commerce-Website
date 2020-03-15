@@ -1,6 +1,8 @@
 const fs = require('fs')
+const crypto = require('crypto')
+
 class UsersRepository {
-  constructor (filename) {
+  constructor(filename) {
     if (!filename) {
       throw new Error('Creating a repository requires a filename')
     }
@@ -13,7 +15,7 @@ class UsersRepository {
     }
   }
 
-  async getAll () {
+  async getAll() {
     // open the file called this.filename
     return JSON.parse(
       await fs.promises.readFile(this.filename, {
@@ -22,12 +24,20 @@ class UsersRepository {
     )
   }
 
-  async create (attrs) {
+  async create(attrs) {
+    attrs.id = this.randomId()
     // object that has an email and password
     const records = await this.getAll()
     records.push(attrs)
-    // write the updated 'records array back to this.filename
-    await fs.promises.writeFile(this.filename, JSON.stringify(records))
+    await this.writeAll(records)
+  }
+
+  async writeAll(records) {
+    await fs.promises.writeFile(this.filename, JSON.stringify(records, null, 2))
+  }
+
+  randomId() {
+    return crypto.randomBytes(4).toString('hex')
   }
 }
 
