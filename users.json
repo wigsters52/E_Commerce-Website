@@ -26,5 +26,15 @@
     "email": "ryan6@ryan.com",
     "password": "password1",
     "id": "76ef50cf"
+  },
+  {
+    "email": "test50@test.com",
+    "password": "password",
+    "id": "c1fee739"
+  },
+  {
+    "email": "ryan56@ryan.com",
+    "password": "0808c75227e8016a2fc3cb976c7210ba976504dd22f66f74e6b438c72d7e6b3b368ccecceafd7ce22c19983a612f2d188608d9951d185ecf42f9a1cf8451cdd2.43aeb8171a4cf2e7",
+    "id": "148362ce"
   }
 ]
