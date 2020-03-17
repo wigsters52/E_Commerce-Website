@@ -31,7 +31,6 @@ class UsersRepository {
 
     const salt = crypto.randomBytes(8).toString('hex')
     const buf = await scrypt(attrs.password, salt, 64)
-    // object that has an email and password
     const records = await this.getAll()
     const record = {
       ...attrs,
@@ -41,6 +40,12 @@ class UsersRepository {
     await this.writeAll(records)
 
     return record
+  }
+
+  async comparePasswords (saved, supplied) {
+    const [hashed, salt] = saved.split('.')
+    const hashedSuppliedBuf = await scrypt(supplied, salt, 64)
+    return hashed === hashedSuppliedBuf.toString('hex')
   }
 
   async writeAll (records) {
